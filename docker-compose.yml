@@ -1,10 +1,25 @@
 services:
   grpc-server:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     container_name: grpc_server
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: tail -f /dev/null
     ports:
       - "50051:50051"
+    networks:
+      - grpc-net
+
+  grpc-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: grpc_client
+    command: tail -f /dev/null
+    depends_on:
+      - grpc-server
+    networks:
+      - grpc-net
+
+networks:
+  grpc-net:
+    driver: bridge

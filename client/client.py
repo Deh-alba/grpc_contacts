@@ -5,7 +5,7 @@ sys.path.insert(0, "./generated")
 from generated import contacts_pb2, contacts_pb2_grpc
 
 def run():
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel('grpc_server:50051')
     stub = contacts_pb2_grpc.ContactServiceStub(channel)
 
     contato = contacts_pb2.Contact(
@@ -29,6 +29,7 @@ def run():
 
     # Lista todos
     all_contacts = stub.ListContacts(contacts_pb2.Empty())
+    
     print("\nTodos os contatos:")
     for c in all_contacts.contacts:
         print(f"- {c.name} ({c.category})")

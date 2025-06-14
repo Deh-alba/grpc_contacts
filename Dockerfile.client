@@ -1,0 +1,15 @@
+# Dockerfile.client
+FROM python:3.10
+
+WORKDIR /app
+
+COPY proto/contacts.proto .
+RUN pip install grpcio grpcio-tools
+
+COPY client/client.py client.py
+COPY generated/ generated/
+RUN touch generated/__init__.py
+
+RUN python -m grpc_tools.protoc -I. --python_out=generated --grpc_python_out=generated contacts.proto
+
+CMD ["python", "client.py"]

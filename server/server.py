@@ -14,13 +14,13 @@ contacts_db = {}
 class ContactServiceServicer(contacts_pb2_grpc.ContactServiceServicer):
     def AddContact(self, request, context):
         contacts_db[request.name] = request
-        return contacts_pb2.AddContactResponse(message=f"Contato '{request.name}' adicionado com sucesso.")
+        return contacts_pb2.AddContactResponse(message=f"Contact '{request.name}' add with sucess.")
 
     def GetContact(self, request, context):
         contact = contacts_db.get(request.name)
         if not contact:
             context.set_code(grpc.StatusCode.NOT_FOUND)
-            context.set_details("Contato não encontrado.")
+            context.set_details("Contact not found.")
             return contacts_pb2.Contact()
         return contact
 
@@ -32,7 +32,7 @@ def serve():
     contacts_pb2_grpc.add_ContactServiceServicer_to_server(ContactServiceServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
-    print("Servidor gRPC rodando na porta 50051...")
+    print("Server gRPC running in port 50051...")
     server.wait_for_termination()
 
 if __name__ == "__main__":

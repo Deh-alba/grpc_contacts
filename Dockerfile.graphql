@@ -1,0 +1,17 @@
+FROM python:3.10
+
+WORKDIR /app
+
+COPY graphql_gateway/graphql_api.py graphql_api.py
+COPY client/client_grpc.py client_grpc.py
+COPY generated/ generated/
+COPY proto/contacts.proto .
+RUN touch generated/__init__.py
+
+RUN pip install grpcio grpcio-tools fastapi strawberry-graphql uvicorn
+
+RUN python -m grpc_tools.protoc -I. --python_out=generated --grpc_python_out=generated contacts.proto
+
+EXPOSE 9000
+
+CMD ["uvicorn", "graphql_api:app", "--host", "0.0.0.0", "--port", "9000","--reload"]

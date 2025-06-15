@@ -61,7 +61,7 @@ services:
     depends_on:
       - grpc-server
     ports:
-      - "9000:8000"
+      - "9000:9000"
     networks:
       - grpc-net
 

@@ -18,6 +18,16 @@ def add_contact(name, number, type, category):
     return response.message
 
 
+def add_contact_proto(name, phone_list, category):
+    contact = contacts_pb2.Contact(
+        name=name,
+        phones=phone_list,
+        category=category
+    )
+    response = stub.AddContact(contact)
+    return response
+
+
 def get_contact(name):
     request = contacts_pb2.ContactRequest(name=name)
     try:

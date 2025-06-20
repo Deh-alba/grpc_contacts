@@ -1,27 +1,33 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import List
+
 
 import client_grpc as client_grpc
 
 app = FastAPI()
 
-class ContactIn(BaseModel):
-    name: str
+class PhoneNumberIn(BaseModel):
     number: str
     type: int  # 0=MOBILE, 1=HOME, 2=WORK
-    category: int  # 0=FAMILY, 1=PERSONAL, 2=BUSINESS
 
+class ContactIn(BaseModel):
+    name: str
+    phones: List[PhoneNumberIn]
+    category: int  # 0=FAMILY, 1=PERSONAL, 2=BUSINESS
 
 @app.post("/contacts/")
 def create_contact(contact: ContactIn):
     """
-    Create a new contact.
-    This endpoint allows you to add a new contact with a name, phone number, type, and category.
-    The phone type can be MOBILE (0), HOME (1), or WORK (2).
-    The category can be FAMILY (0), PERSONAL (1), or BUSINESS (2).
+    Create a new contact with multiple phone numbers.
     """
-    msg = client_grpc.add_contact(contact.name, contact.number, contact.type, contact.category)
-    return {"message": msg}
+    phone_proto_list = [
+        client_grpc.contacts_pb2.PhoneNumber(number=p.number, type=p.type)
+        for p in contact.phones
+    ]
+
+    msg = client_grpc.add_contact_proto(contact.name, phone_proto_list, contact.category)
+    return {"message": msg.message}
 
 @app.get("/contacts/{name}")
 def read_contact(name: str):
